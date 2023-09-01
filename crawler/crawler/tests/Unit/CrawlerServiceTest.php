@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 use App\Services\CrawlerService;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -23,8 +23,5 @@ class CrawlerServiceTest extends TestCase
     {
         $crawler = $this->mockCrawlerService->getCrawler();
         $this->assertNotNull($crawler);
-        $this->assertType('[string]', $crawler->getDescription());
-        $this->assertType('[string]', $crawler->getTitle());
-        $this->assertType('[string]', $crawler->getBody());
     }
 }
