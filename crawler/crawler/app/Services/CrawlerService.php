@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
+use Illuminate\Support\Facades\Log;
 
 class CrawlerService
 {
@@ -12,10 +13,17 @@ class CrawlerService
     
     public function __construct(string $url = '')
     {
-        $this->client = app(Client::class);
-        $content = $this->client->get($url)->getBody()->getContents();
-        $this->crawler = new Crawler();
-        $this->crawler->addHtmlContent($content);
+        try {
+            $this->client = app(Client::class);
+            $content = $this->client->get($url)->getBody()->getContents();
+            $this->crawler = new Crawler();
+            $this->crawler->addHtmlContent($content);
+        } catch (\Exception $e) {
+            log::error('CrawlerService Error.', ['message' => $e->getMessage()]);
+        } finally {
+            $this->client = null;
+            $this->crawler = null;
+        }
     }
 
     public function getCrawler(): Null | Crawler

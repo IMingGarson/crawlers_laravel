@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CrawleeStoreRequest;
 use App\Services\CrawlerService;
-
+use Illuminate\Support\Facades\Log;
 
 class CrawleesController extends Controller
 {
@@ -50,7 +50,7 @@ class CrawleesController extends Controller
         $web_description = $crawler->getDescription();
         $web_title = $crawler->getTitle();
         $web_body = $crawler->getBody();
-
+        dd($web_description);
         $crawled_data = [
             'url' => $url,
             'contents' => json_encode([
@@ -67,10 +67,10 @@ class CrawleesController extends Controller
             
             $crawled_data['contents'] = json_decode($crawled_data['contents']);
             return response()->json([
-                'code' => 200,
+                'code' => 201,
                 'message' => 'Success',
                 'data' => $crawled_data
-            ], 200);
+            ], 201);
 
         } catch (Exception $e) {
             DB::rollBack();
