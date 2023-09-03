@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CrawleeStoreRequest;
 use App\Services\CrawlerService;
+use App\Services\BrowserShotService;
 use Illuminate\Support\Facades\Log;
 
 class CrawleesController extends Controller
@@ -15,6 +16,14 @@ class CrawleesController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    private $browserShotService = null;
+
+    public function __construct(BrowserShotService $browserShotService)
+    {
+        $this->browserShotService = $browserShotService;
+    }
+
     public function index()
     {
         return response()->json([
@@ -38,8 +47,8 @@ class CrawleesController extends Controller
     public function store(CrawleeStoreRequest $request)
     {
         $url = $request->get('url');
-        $crawler = (new CrawlerService($url))->getCrawler();
-        if (!$crawler) {
+        $crawlerService = new CrawlerService($url);
+        if (!$crawlerService->getCrawler()) {
             return response()->json([
                 'code' => 200,
                 'message' => 'Invalid URL',
@@ -47,29 +56,36 @@ class CrawleesController extends Controller
             ], 200); 
         }
 
-        $web_description = $crawler->getDescription();
-        $web_title = $crawler->getTitle();
-        $web_body = $crawler->getBody();
-        dd($web_description);
-        $crawled_data = [
+        $webDescription = $crawlerService->getDescription();
+        $webTitle = $crawlerService->getTitle();
+        $webBody = $crawlerService->getBody();
+        $screenshotPath = $this->browserShotService->getScreenShot($url);
+        if (!$screenshotPath) {
+            return response()->json([
+                'code' => 200,
+                'message' => 'Screenshot Error.',
+                'data' => []
+            ], 200); 
+        }
+        $crawledData = [
             'url' => $url,
             'contents' => json_encode([
-                'title' => $web_title,
-                'description' => $web_description ? $web_description[0] : '',
-                'body' => $web_body
+                'title' => $webTitle,
+                'description' => $webDescription,
+                'body' => $webBody
             ]),
+            'screenshot_path' => $screenshotPath
         ];
-
         try {
             DB::beginTransaction();
-            $crawled_data = Crawlees::create($crawled_data);
+            $crawledData = Crawlees::create($crawledData);
             DB::commit();
             
-            $crawled_data['contents'] = json_decode($crawled_data['contents']);
+            $crawledData['contents'] = json_decode($crawledData['contents']);
             return response()->json([
                 'code' => 201,
                 'message' => 'Success',
-                'data' => $crawled_data
+                'data' => $crawledData
             ], 201);
 
         } catch (Exception $e) {

@@ -20,9 +20,6 @@ class CrawlerService
             $this->crawler->addHtmlContent($content);
         } catch (\Exception $e) {
             log::error('CrawlerService Error.', ['message' => $e->getMessage()]);
-        } finally {
-            $this->client = null;
-            $this->crawler = null;
         }
     }
 
@@ -33,7 +30,8 @@ class CrawlerService
 
     public function getDescription(): string
     {
-        return $this->crawler->filterXpath("//meta[@name='description']")->extract(['content']);
+        $webDescription = $this->crawler->filterXpath("//meta[@name='description']")->extract(['content']);
+        return $webDescription ? $webDescription[0] : '';
     }
 
     public function getTitle(): string
