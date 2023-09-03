@@ -29,8 +29,8 @@ class CrawleesController extends Controller
         return response()->json([
             'code' => 200,
             'message' => '',
-            'data' => []
-        ], 200);
+            'data' => Crawlees::all()
+        ], 200); 
     }
 
     /**
@@ -104,7 +104,6 @@ class CrawleesController extends Controller
      */
     public function show(Crawlees $crawlees)
     {
-        //
     }
 
     /**

@@ -12,7 +12,7 @@ const puppeteer = require('puppeteer');
   });
   const page = await browser.newPage();
   await page.goto(url);
-  await page.screenshot({ path: `/storage/app/public/${fileName}.png` });
+  await page.screenshot({ path: `/var/www/crawler/storage/app/public/${fileName}.png` });
 
   await browser.close();
 })();

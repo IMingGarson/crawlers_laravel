@@ -30,7 +30,7 @@ class BrowserShotService
                 throw new ProcessFailedException($process);
             }
             Log::info('Screenshot Output.', ['message' => $process->getOutput()]);
-            return '/storage/app/public/' . $filename . '.png';
+            return config('app.url') . '/storage/' . $filename . '.png';
         } catch (\Exception $e) {
             Log::error('Screenshot Error.', ['message' => $e->getMessage()]);
         }
