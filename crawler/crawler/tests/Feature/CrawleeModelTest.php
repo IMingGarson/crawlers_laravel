@@ -12,9 +12,12 @@ class CrawleeModelTest extends TestCase
     /**
      * A basic feature test example.
      */
-    public function test_insert_crawlee_data(): void
+    public function test_create_crawlee_data(): void
     {
         $crawlee = Crawlees::factory()->make();
         $this->assertNotNull($crawlee);
+        $this->assertArrayHasKey('url', $crawlee);
+        $this->assertArrayHasKey('screenshot_path', $crawlee);
+        $this->assertArrayHasKey('contents', $crawlee);
     }
 }
