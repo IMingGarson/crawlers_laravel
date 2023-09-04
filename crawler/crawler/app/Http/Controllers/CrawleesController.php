@@ -26,11 +26,22 @@ class CrawleesController extends Controller
 
     public function index()
     {
+        $data = Crawlees::get()->map(function($d) {
+            $d['contents'] = json_decode($d['contents'], true);
+            return [
+                'id' => $d['id'],
+                'screenshot_url' => $d['screenshot_path'],
+                'contents' => [
+                    'title' => $d['contents']['title'],
+                    'description' => $d['contents']['description'],
+                ]
+            ];
+        });
         return response()->json([
             'code' => 200,
             'message' => '',
-            'data' => Crawlees::all()
-        ], 200); 
+            'data' => $data
+        ], 200);
     }
 
     /**
@@ -102,8 +113,15 @@ class CrawleesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Crawlees $crawlees)
+    public function show($id)
     {
+        $data = Crawlees::where('id', $id)->first()->toArray();
+        $data['contents'] = json_decode($data['contents'], true);
+        return response()->json([
+            'code' => 200,
+            'message' => '',
+            'data' => $data
+        ], 200); 
     }
 
     /**
